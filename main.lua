@@ -150,7 +150,7 @@ Sandbox = function(Object, Default, OpposeOnMethods)
 	mt.__index = function(_, key)
 		local Block = find(Blocked, key, mt)
 
-		for _, Method in next, Options.Hooks do
+		for _, Method in next, Hooks do
 			local Name = Method[1]
 			local Dotted = split(Name, ".") -- LocalPlayer.Kick -> {"LocalPlayer", "Kick"}
 			local Piece = Dotted[#Dotted]
@@ -216,15 +216,10 @@ getgenv().typeof = function(a)
 	return Typeof(a)
 end
 
---[[
-Example usage of HookService:
 HookService("Players", {
-	"LocalPlayer.Kick", print
+	{"LocalPlayer.Kick", print}
 })
-Prevents the localplayer from being kicked
-]]
 
---[[ Do this to sandbox every instance.]]
 getgenv().game = Sandbox(game)
 getgenv().Game = game
 getgenv().workspace = game.Workspace
