@@ -19,15 +19,17 @@ HookService() - Takes 2 arguments, (Service name, Methods)
 You use this to hook methods, for example:
 ```lua
 HookService("Players", {
+  {
 	"LocalPlayer.Kick", function(self, Message)
-    print("LocalPlayer.Kick attempt prevented, Kick message:",Message)
-  end
+    		print("LocalPlayer.Kick attempt prevented, Kick message:",Message)
+  	end
+  }
 })
 ```
 
 Breaking it down:
 "Players" is the service which's methods we are hooking.
-The second argument is a table with 2 values.
+The second argument is a table with infinite values, we're focusing on the first only though.
 "LocalPlayer.Kick" is the method name, You can use . if you're trying to access an object's method like LocalPlayer that isnt directly in players.
 function(self, ... is the function that gets called instead of the original, it gets called with the original function's arguments, for example:
 LocalPlayer:Kick("HWID Mismatch")
