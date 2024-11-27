@@ -8,6 +8,8 @@ local newproxy, getmetatable, assert, next, pcall, tostring, rawget, error = new
 local tinsert, tunpack, tfind, tmove = table.insert, table.unpack, table.find, table.move
 local format, split, rep, sub, gsub = string.format, string.split, string.rep, string.sub, string.gsub
 
+local Instance_new = Instance.new
+
 local Sandboxed, SandboxedData = {}, {}
 local Signals = {}
 
@@ -131,6 +133,7 @@ Sandbox = function(Object, Default, OpposeOnMethods)
 	local e = function()error("[SANDBOX] Blocked Function", 2)end
 
 	for a, b in next, Default do
+		print(`__DEFAULT__ {a}={b}`)
 		mt[a] = b
 	end
 
@@ -147,16 +150,33 @@ Sandbox = function(Object, Default, OpposeOnMethods)
 		end
 	end
 
+
 	mt.__index = function(_, key)
+		local raw = rawget(mt, key);
+		if raw then print("raw exists",key) return raw end
+
 		local Block = find(Blocked, key, mt)
 
-		for _, Method in next, Hooks do
-			local Name = Method[1]
-			local Dotted = split(Name, ".") -- LocalPlayer.Kick -> {"LocalPlayer", "Kick"}
-			local Piece = Dotted[#Dotted]
+		for _, Hook in next, Hooks do -- DUMBASS FUCKING FEATURE TOOK ME AROUND 3 HOURS TO FUCKING FIX RAHHHHHH
+			local Path, Value = Hook[1], Hook[2] -- "LocalPlayer.Kick", print
 
-			if sub(key, 1, #Piece) == Piece then
-				return Method[2]
+			local Parts = split(Path, ".") -- {"LocalPlayer", "Kick"}
+			local First, Last = Parts[1], Parts[#Parts]; -- "LocalPlayer", "Kick"
+
+			local function Stupid_Sandbox(Index, REAL_Instance)
+				local Part = Parts[Index]
+
+				return Sandbox(REAL_Instance, {
+					[Part] = (
+						Index == #Parts and Value or Stupid_Sandbox(Index + 1, REAL_Instance[Part])
+					);
+				})
+			end
+
+			if First ~= Last then -- "LocalPlayer" ~= "Kick"
+				return Stupid_Sandbox(2, Object[First])
+			elseif First == Last then -- "LocalPlayer" == "Kick"
+				return Value
 			end
 		end
 
@@ -215,10 +235,6 @@ getgenv().typeof = function(a)
 
 	return Typeof(a)
 end
-
-HookService("Players", {
-	{"LocalPlayer.Kick", print}
-})
 
 getgenv().game = Sandbox(game)
 getgenv().Game = game
