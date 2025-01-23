@@ -133,7 +133,6 @@ Sandbox = function(Object, Default, OpposeOnMethods)
 	local e = function()error("[SANDBOX] Blocked Function", 2)end
 
 	for a, b in next, Default do
-		print(`__DEFAULT__ {a}={b}`)
 		mt[a] = b
 	end
 
@@ -153,7 +152,7 @@ Sandbox = function(Object, Default, OpposeOnMethods)
 
 	mt.__index = function(_, key)
 		local raw = rawget(mt, key);
-		if raw then print("raw exists",key) return raw end
+		if raw then return raw end
 
 		local Block = find(Blocked, key, mt)
 
