@@ -236,8 +236,4 @@ getgenv().typeof = function(a)
 	return Typeof(a)
 end
 
-getgenv().game = Sandbox(game)
-getgenv().Game = game
-getgenv().workspace = game.Workspace
-getgenv().Workspace = game.Workspace
-getgenv().script = Sandbox(script)
+return Sandbox
