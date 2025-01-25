@@ -235,4 +235,4 @@ getgenv().typeof = function(a)
 	return Typeof(a)
 end
 
-return Sandbox
+return Sandbox, ReverseGet
